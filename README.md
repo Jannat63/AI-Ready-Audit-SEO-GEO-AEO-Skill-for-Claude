@@ -12,6 +12,7 @@
 ## Table of contents
 
 - [The problem this solves](#the-problem-this-solves)
+- [Read this before you install anything, including this](#read-this-before-you-install-anything-including-this)
 - [Who this is for](#who-this-is-for)
 - [Compared to what's already out there](#compared-to-whats-already-out-there)
 - [Sample output](#sample-output)
@@ -30,38 +31,42 @@
 
 AI crawling changed shape faster than most SEO tooling caught up. OpenAI, Anthropic, and Perplexity all now run separate training / search-index / user-fetch crawlers instead of one bot per company, and a robots.txt written against the old one-bot-per-company mental model can't even express "let AI cite me, don't let AI train on me" — a distinction real site owners increasingly want to make. Meanwhile the single most common reason a technically-fine-looking page loses to a weaker competitor is invisible from inside a browser: the page renders client-side, so a crawler that doesn't execute JavaScript sees an empty shell where the content should be. That specific failure mode — found on a real furniture-industry competitive audit that this rubric is partly built from — is often the actual headline finding, buried under a dozen smaller notes in most audits instead of leading the report.
 
-This skill runs a technical scan (robots.txt across every current AI crawler, sitemap, llms.txt, rendering-risk detection, schema.org) using nothing but Claude's own web tools and a dependency-free script, then layers judgment on top for what a script can't measure — answer-first structure, E-E-A-T signals, third-party citation footprint — and reports four scores that are never collapsed into one number, because a site can be strong on one and weak on another and that's the useful information.
+This skill runs a technical scan (robots.txt across every current AI crawler, sitemap, llms.txt, rendering-risk detection, schema.org) using nothing but Claude's own web tools and a dependency-free script, then layers judgment on top for what a script can't measure, and reports four scores that are never collapsed into one number.
+
+## Read this before you install anything, including this
+
+This is one of the most crowded niches in the whole Claude Skills ecosystem right now, and it's worth saying that plainly instead of pretending otherwise. At least four separate, well-engineered, actively-maintained projects already do serious SEO/GEO/AEO work as a Claude Skill — one of them backed by a 24.8k-star, 368-skill collection with a citation tracker, per-industry E-E-A-T scoring, and automatic schema injection. If you only read one section of this README, read [Compared to what's already out there](#compared-to-whats-already-out-there) before installing anything, this tool included, and pick based on what you actually need — breadth and automation, or something small enough to read start to finish in twenty minutes.
 
 ## Who this is for
 
 **Good fit:**
-- Anyone who wants a real audit without installing a platform — clone the folder, ask a question, get a report
+- Anyone who wants a real audit without installing a platform — clone the folder, ask a question, get a report, nothing to configure first
 - A quick "why don't we show up in ChatGPT/Perplexity when we rank fine on Google" diagnostic
-- Someone who wants to read the entire scoring methodology in one sitting (it's six short Markdown files) rather than trust a black-box score
+- Someone who wants to read the entire scoring methodology in one sitting (it's six short Markdown files) rather than trust a score they can't inspect
 - A site that's never had a technical SEO pass and likely has at least one structural issue (rendering, crawler access, missing schema) worth finding before anything else
 
 **Not a good fit — be honest about this:**
-- Ongoing, continuous monitoring with historical trend tracking — this is a point-in-time audit tool, not a dashboard
-- Deep keyword research, backlink analysis, or paid-search competitive intelligence — genuinely out of scope, and any tool claiming to do all of this *and* be simple is probably not being straight with you about the tradeoff
-- An agency wanting a fully white-labeled, consultant-ready operations platform with client management built in — see the comparison below, that's a real use case, just not this tool's use case
+- Ongoing, continuous monitoring with historical trend tracking or a citation ledger over time — this is a point-in-time audit, several of the tools below do tracking properly
+- Deep keyword research, backlink analysis, paid-search competitive intelligence, or automated content rewriting — genuinely out of scope; several tools below do this well, this one doesn't try
+- An agency wanting a fully white-labeled, consultant-ready operations platform with client management built in — real use case, just not this tool's use case
 
 ## Compared to what's already out there
 
-This space is more mature than a first search suggests, and it's worth naming the real competitors accurately rather than pretending the field is empty.
+Named accurately, not soft-pedaled:
 
-| Project | Stars (verified) | What it actually is | How it differs from this |
+| Project | Scale (verified) | What it actually is | How it differs from this |
 |---|---|---|---|
-| [`AgriciDaniel/claude-seo`](https://github.com/AgriciDaniel/claude-seo) | ~15.3k★ / 2.3k forks | A genuinely comprehensive, actively-maintained SEO operations platform: 33 skills, 18 sub-agents, 380 files, 439 passing tests, CI, security auditing (SSRF protection, secret scanning, `pip-audit`), signed releases, optional paid MCP extensions (Ahrefs, Semrush, DataForSEO). Explicitly built for freelance SEO consultants scoping client engagements. It already does evidence-based reframing of the llms.txt myth — this isn't unique to this toolkit, and it's a good sign when a big incumbent does it too. | Requires a setup step (`/seo setup` — creates an isolated Python environment and installs Playwright Chromium). This toolkit needs none of that: no managed runtime, no browser install, one script. Trade real breadth (25+ SEO sub-domains: local SEO, backlinks, international, e-commerce) for something you can read start to finish and understand every scoring decision in about 20 minutes. Different tool for a different moment — theirs for running an SEO practice, this for a fast, transparent, no-install audit. |
-| [`Hainrixz/claude-seo-ai`](https://github.com/Hainrixz/claude-seo-ai) | 47★ / 5 forks | Small but excellent — worth knowing about even at low star count. Two independent scores (Search SEO, AI Visibility), never blended. Every finding carries a confidence tier (established / directional / speculative). An opt-in fixer with real write-safety guardrails (dry-run by default, git-aware, refuses a dirty tree, never touches `.git`/secrets/lockfiles). Cross-agent via Vercel Skills (Cursor, Codex, Gemini CLI, Windsurf), not just Claude Code. Also explicitly labeled "Built for 2026-2027." | The confidence-tier honesty philosophy is genuinely close to what this toolkit does with "confirmed vs. emerging" — credit where due. The structural difference: four explicitly separated scores here (SEO / GEO / AEO / Future-Readiness) vs. their two; this toolkit is audit-only with no fixer at all, by design, handing off to a Developer/Content action table instead of writing changes itself; and this is a single portable Skill folder rather than a Claude Code plugin-marketplace install with slash commands. |
-| [`SNLabat/SEO-GEO-AEO-Skill`](https://github.com/SNLabat/SEO-GEO-AEO-Skill) | — | ZIP-distributed specifically for Claude's Cowork desktop app; outputs Word/PDF reports. | Narrower distribution model (Cowork-only ZIP vs. a portable skill folder that works anywhere Skills are supported). |
-| [`xseekio/claude-code-seo-geo-skills`](https://github.com/xseekio/claude-code-seo-geo-skills) | — | Six slash commands backed by xSeek's own tracked search data — genuinely useful if already paying for that service. | Requires the underlying paid data service to be meaningful; this toolkit has no paid dependency at any tier. |
-| [`199-biotechnologies/claude-skill-seo-geo-optimizer`](https://github.com/199-biotechnologies/claude-skill-seo-geo-optimizer) | — | Analyzes HTML/Markdown/React source files directly for SEO/GEO signals — a content-file optimizer. | Different input entirely: this toolkit audits a *live, deployed* URL (what a crawler actually sees), not source files before they ship. |
+| [`alirezarezvani/claude-skills`](https://github.com/alirezarezvani/claude-skills) | **24.8k★ / 3.5k forks**, 364 skills incl. a dedicated `aeo` skill | The single biggest player found in this space. Its `aeo` skill alone is ~3,200 lines across 8 files: E-E-A-T + structure scoring (0–100, calibrated per industry — YMYL sites need 85+, SaaS/B2B 70, e-commerce 65), a local citation-tracking ledger across 5 LLMs with cross-LLM correlation analysis, and an optimizer that can rewrite content and inject schema.org JSON-LD directly. Part of a 24.8k-star, 18-domain mega-collection covering nearly every business function. | Their `aeo` skill optimizes and rewrites content; this toolkit only audits and hands off a to-do list, by design. Their collection requires picking through 364 skills and a plugin-marketplace install; this is one self-contained folder. No Future-Readiness-style fourth score in their model — theirs is deep on AEO specifically, this is deliberately narrower (four axes, SEO/GEO/AEO/Future-Readiness) and smaller in absolute scope. |
+| [`AgriciDaniel/claude-seo`](https://github.com/AgriciDaniel/claude-seo) | **15.3k★ / 2.3k forks** | A comprehensive, actively-maintained SEO operations platform: 33 skills, 18 sub-agents, 439 passing tests, CI, security auditing, signed releases, optional paid MCP extensions (Ahrefs, Semrush, DataForSEO). Built for freelance SEO consultants scoping client engagements. Already does evidence-based reframing of the llms.txt myth. | Requires a setup step (`/seo setup` — isolated Python environment, Playwright Chromium install). This toolkit needs none of that. Trades their real breadth (local SEO, backlinks, international, e-commerce) for something legible in one sitting. |
+| [`Hainrixz/claude-seo-ai`](https://github.com/Hainrixz/claude-seo-ai) | 47★ / 5 forks — small, but excellent | Two independent scores (Search SEO, AI Visibility), confidence tiers on every finding (established/directional/speculative), an opt-in fixer with real write-safety guardrails, cross-agent via Vercel Skills. Also labeled "Built for 2026-2027." | Its confidence-tier honesty is genuinely close in spirit to this toolkit's "confirmed vs. emerging" labeling — credit where due, this isn't unique framing. Structural difference: four separated scores here vs. their two; audit-only here, they have a fixer; a plain portable Skill folder here vs. their Claude Code plugin-marketplace packaging. |
+| [`borghei/Claude-Skills`](https://github.com/borghei/Claude-Skills) | 368 skills, 859 tools, 20 domains | Another large general-purpose mega-collection with its own separate `marketing/aeo` skill, including a detailed citation-tracking-and-measurement methodology reference. | Same shape of tradeoff as the two collections above: enormous breadth across every business function vs. a single-purpose, small, readable tool. |
+| [`SNLabat/SEO-GEO-AEO-Skill`](https://github.com/SNLabat/SEO-GEO-AEO-Skill), [`xseekio/claude-code-seo-geo-skills`](https://github.com/xseekio/claude-code-seo-geo-skills), [`199-biotechnologies/claude-skill-seo-geo-optimizer`](https://github.com/199-biotechnologies/claude-skill-seo-geo-optimizer) | smaller, listed for completeness | Cowork-only ZIP distribution; xSeek-paid-data-backed slash commands; source-file (not live-URL) optimizer, respectively. | Different distribution model, paid-data dependency, or different input (files vs. a deployed URL) in each case. |
 
-The honest summary: if you want a full SEO consultancy operating system, `claude-seo` is the more capable choice and it's earned its stars. If you want something that audits a URL in a few minutes with zero setup, four legible scores, and a methodology you can actually read and verify, that's what this is for.
+The honest summary: if AEO is core to your work and you want automated rewriting, a citation ledger, and per-industry scoring, `alirezarezvani/claude-skills`'s `aeo` skill or `AgriciDaniel/claude-seo` are more capable choices, and they've earned their stars. This toolkit is for a narrower moment — auditing a URL in a few minutes with zero setup, four legible scores, and a methodology short enough to actually read before trusting it.
 
 ## Sample output
 
-Illustrative output from `scripts/technical_scan.py`, showing the rendering-risk detection that's the single highest-value check in the whole scan — this is the exact pattern from the real-world finding this toolkit is partly built around, where a competitor's client-side-rendered homepage was effectively invisible to non-JS crawlers while a technically weaker page outranked it:
+Illustrative output from `scripts/technical_scan.py`, showing the rendering-risk detection — the single highest-value check in the scan, and the one none of the tools above lead with as prominently:
 
 ```json
 {
@@ -93,7 +98,7 @@ Illustrative output from `scripts/technical_scan.py`, showing the rendering-risk
 }
 ```
 
-A crawler that can't run JavaScript sees 20 characters of content on this homepage — the title and nothing else — regardless of how good the actual content is once rendered in a browser. This is the finding that should lead the report, not get buried on page three.
+A crawler that can't run JavaScript sees 20 characters of content on this homepage regardless of how good the content is once rendered in a browser. This is the finding that should lead the report.
 
 ## Methodology — four scores, never blended
 
@@ -104,7 +109,7 @@ A crawler that can't run JavaScript sees 20 characters of content on this homepa
 | **AEO** | Whether content leads with real answers, has E-E-A-T signals, is written to be quoted |
 | **Future-Readiness** | Crawler-tier granularity, agent-fetchable structure, structured-data depth, freshness signals — explicitly labeled confirmed-current vs. emerging-pattern, never blurred together |
 
-Every threshold in the scoring rubric traces to a cited source in `references/citation-research-notes.md` — including the honest parts: schema markup's measured AI-citation lift is modest (~2.4% in one large test), most published `llms.txt` files get zero fetch requests, and Google retired FAQ rich results for all sites as of May 7, 2026. The rubric says all of this plainly instead of overselling any single lever.
+Every threshold traces to a cited source in `references/citation-research-notes.md` — including the honest parts: schema markup's measured AI-citation lift is modest (~2.4% in one large test), most published `llms.txt` files get zero fetch requests, and Google retired FAQ rich results for all sites as of May 7, 2026.
 
 ## Quick start
 
@@ -117,7 +122,7 @@ git clone https://github.com/<your-username>/ai-ready-audit.git
 
 **claude.ai (with code execution enabled):** upload this folder or its ZIP into a conversation and ask about auditing a URL — Claude finds and uses the skill automatically.
 
-No install script, no `setup` command, no browser binary to download. That's a deliberate scope choice, not an oversight — see [Compared to what's already out there](#compared-to-whats-already-out-there).
+No install script, no `setup` command, no browser binary to download, no plugin marketplace. Deliberate scope choice — see the comparison above.
 
 ## Real usage examples
 
@@ -129,49 +134,40 @@ No install script, no `setup` command, no browser binary to download. That's a d
 
 > *"Give me a Quick Audit of this URL, I just want the top 3 issues."*
 
-> *"Run a Full Audit and give me separate action tables for my developer and my content writer."*
-
 ## How it works — no black box
 
 ```
 ai-ready-audit/
-├── SKILL.md                          # the workflow Claude follows
-├── scripts/
-│   └── technical_scan.py             # stdlib-only Python: robots.txt (every current
-│                                      # AI crawler, categorized), sitemap, llms.txt,
-│                                      # rendering-risk, schema.org — zero pip installs
+├── SKILL.md
+├── scripts/technical_scan.py         # stdlib-only, zero pip installs
 ├── references/
-│   ├── scoring-rubric.md             # exact point-by-point scoring method
-│   ├── ai-crawler-directory.md       # every current AI bot, by category
-│   ├── llms-txt-guide.md             # the spec + an honest adoption reality check
-│   ├── future-readiness-signals.md   # confirmed vs. emerging, kept explicitly separate
-│   └── citation-research-notes.md    # the primary research the rubric is grounded in
-└── assets/
-    └── report-template.md            # the exact report structure
+│   ├── scoring-rubric.md
+│   ├── ai-crawler-directory.md
+│   ├── llms-txt-guide.md
+│   ├── future-readiness-signals.md
+│   └── citation-research-notes.md
+└── assets/report-template.md
 ```
 
-Total footprint: one script, five reference files, one template. Open any of them directly — nothing about the scoring logic sits behind an API call you can't inspect.
+Total footprint: one script, five reference files, one template — open any of them directly.
 
 ## FAQ
 
-**Is this better than `claude-seo` (15k★)?**
-No, not across the board, and see [above](#compared-to-whats-already-out-there) for the honest comparison — it's a more capable tool for running an SEO practice. This is a different, smaller thing: a transparent, zero-setup audit you can verify by reading five files.
+**Is this actually the best SEO/GEO/AEO Claude Skill?**
+No, and this README says so directly — `alirezarezvani/claude-skills` and `AgriciDaniel/claude-seo` are both larger, more capable, more battle-tested projects for anyone who wants breadth or automated fixes. This is a smaller, narrower, zero-setup tool. Pick based on what's in the comparison table above.
 
-**Does it need a Google PageSpeed / Ahrefs / DataForSEO API key?**
-No, never, at any tier. That's true of every tool in the comparison table too, to be fair — most now offer a genuinely free base tier. The difference here is there's no optional paid tier to begin with, because there's nothing more the tool does if you added one.
+**Does it need an API key?**
+No, never, at any tier. Several of the tools above also offer a genuinely free base tier now, to be fair — the difference is there's no paid tier to begin with here.
 
-**Will the scores match what a paid tool like Ahrefs or Semrush would show?**
-Not directly comparable — this measures AI-crawler and citation readiness specifically, which most classic SEO tools don't score at all. Use both if you have access to both; they answer different questions.
+**Why does a fourth-score, zero-setup audit tool matter if bigger tools already do AEO well?**
+Because "bigger and more capable" and "fast to install and easy to fully verify" are different products serving different moments — sometimes the second one is what's actually needed.
 
-**Why separate Future-Readiness from GEO instead of folding it in?**
-Because they answer different questions: GEO asks "can AI systems cite you today," Future-Readiness asks "will today's fixes still matter as agent behavior keeps evolving." A site can score well on one and poorly on the other — collapsing them into one number would hide that.
-
-**Can this fix issues automatically, like `claude-seo-ai`'s fixer?**
-No, by design. It hands off a prioritized, owner-split action table (Developer actions / Content actions) rather than writing changes itself.
+**Can this fix issues automatically?**
+No, by design — it hands off a prioritized, owner-split action table rather than writing changes itself. `Hainrixz/claude-seo-ai` and `alirezarezvani/claude-skills`'s `aeo` skill both do automated changes if that's what's wanted.
 
 ## Part of a small series
 
-This is skill 1 of a small set of practitioner-built Claude Skills — [`sheet-cms-toolkit`](https://github.com/<your-username>/sheet-cms-toolkit) is skill 2, a zero-dependency validator for Google-Sheets-backed sites. More coming; star this repo to catch them.
+This is skill 1 of a small set of practitioner-built Claude Skills — [`sheet-cms-toolkit`](https://github.com/<your-username>/sheet-cms-toolkit) is skill 2, a validator for Google-Sheets-backed sites with no direct competitor found even after checking against five separate 300+-skill collections.
 
 ## Author
 
@@ -179,8 +175,8 @@ Built by **Ahsan Jannat** — SEO, AEO & GEO specialist and Meta Ads consultant.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE). Use it, fork it, improve it.
+MIT — see [LICENSE](./LICENSE).
 
 ## Keywords
 
-Claude Skill, SEO audit, GEO audit, AEO audit, Generative Engine Optimization, Answer Engine Optimization, AI search visibility, AI crawler robots.txt, llms.txt, ChatGPT citations, Claude citations, Perplexity citations, AI-ready website, Claude Code skill, Claude Cowork skill, rendering risk audit, client-side rendering SEO
+Claude Skill, SEO audit, GEO audit, AEO audit, Generative Engine Optimization, Answer Engine Optimization, AI search visibility, AI crawler robots.txt, llms.txt, ChatGPT citations, Claude citations, Perplexity citations, AI-ready website, Claude Code skill, rendering risk audit, client-side rendering SEO
