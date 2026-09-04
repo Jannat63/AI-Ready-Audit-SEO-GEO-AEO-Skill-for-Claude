@@ -115,7 +115,7 @@ Every threshold traces to a cited source in `references/citation-research-notes.
 
 **Claude Code / Cowork:**
 ```bash
-git clone https://github.com/<your-username>/ai-ready-audit.git
+git clone https://github.com/Jannat63/AI-Ready-Audit-SEO-GEO-AEO-Skill-for-Claude.git ai-ready-audit
 # point your Claude Code / Cowork skills directory at this folder,
 # or copy it into ~/.claude/skills/ai-ready-audit
 ```
@@ -167,7 +167,7 @@ No, by design — it hands off a prioritized, owner-split action table rather th
 
 ## Part of a small series
 
-This is skill 1 of a small set of practitioner-built Claude Skills — [`sheet-cms-toolkit`](https://github.com/<your-username>/sheet-cms-toolkit) is skill 2, a validator for Google-Sheets-backed sites with no direct competitor found even after checking against five separate 300+-skill collections.
+This is skill 1 of a small set of practitioner-built Claude Skills — [`sheet-cms-toolkit`](https://github.com/Jannat63/Sheet-as-CMS-Toolkit-A-Claude-Skill-for-Google-Sheets-Backed-Sites) is skill 2, a validator for Google-Sheets-backed sites with no direct competitor found even after checking against five separate 300+-skill collections, and [`motion-audit-toolkit`](https://github.com/Jannat63/Motion-Audit-Toolkit---A-Claude-Skill-for-Auditing-Shipped-Animations) is skill 3, auditing shipped animations for performance, accessibility, and consistency.
 
 ## Author
 
